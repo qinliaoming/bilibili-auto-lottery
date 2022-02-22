@@ -4,6 +4,7 @@ package org.carcinus.tools.bootstrap.login.impl;
 import org.carcinus.tools.bootstrap.login.LoginAction;
 import org.carcinus.tools.bootstrap.login.LoginActionFactory;
 import org.carcinus.tools.bootstrap.login.LoginActionType;
+import org.carcinus.tools.bootstrap.login.impl.qr.QRLoginAction;
 import org.carcinus.tools.context.GlobalContext;
 import org.carcinus.tools.utils.TestGlobalContextUtils;
 import org.junit.Before;

@@ -2,6 +2,7 @@ package org.carcinus.tools.utils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -12,11 +13,14 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.File;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class HttpUtils {
@@ -43,11 +47,19 @@ public class HttpUtils {
             return EntityUtils.toString(response.getEntity(), "UTF-8");
         }
     }
+    private static List<BasicNameValuePair> buildParams(Map<String, String> params) {
+        ArrayList<BasicNameValuePair> nameValuePairs = new ArrayList<>();
+        params.forEach((k, v) -> {
+            nameValuePairs.add(new BasicNameValuePair(k, v));
+        });
+        return nameValuePairs;
+    }
+
     public static String doPost(URI uri, Map<String, String> params) throws Exception {
 
         HttpPost httpPost = new HttpPost(uri);
-//        params.forEach(httpPost.setEntity(new ););
-//        httpPost.setEntity(new StringEntity());
+        List<BasicNameValuePair> nameValuePairs = buildParams(params);
+        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(httpPost)) {
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {

@@ -36,7 +36,7 @@ public class Configuration implements Serializable, Cloneable {
     }
 
     @Override
-    protected Configuration clone() throws CloneNotSupportedException {
+    protected Configuration clone() {
         return new Configuration(configuration);
     }
 

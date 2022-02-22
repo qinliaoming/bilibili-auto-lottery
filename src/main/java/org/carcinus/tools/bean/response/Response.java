@@ -12,16 +12,27 @@ public class Response {
      * status code
      * 0: success
      */
-    private int code;
+    protected int code;
     /**
      * unknown
      */
-    private boolean status;
+    protected boolean status;
     /**
      * timestamp
      */
-    private long ts;
+    protected long ts;
 
+    public int getCode() {
+        return code;
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+
+    public long getTs() {
+        return ts;
+    }
 //    /**
 //     * message body
 //     */

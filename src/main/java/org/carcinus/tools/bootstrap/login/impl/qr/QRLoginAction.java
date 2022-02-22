@@ -1,7 +1,7 @@
 package org.carcinus.tools.bootstrap.login.impl.qr;
 
 import com.google.common.base.Preconditions;
-import com.google.zxing.WriterException;
+import lombok.SneakyThrows;
 import org.carcinus.tools.bean.constant.KeyConstant;
 import org.carcinus.tools.bean.response.Response;
 import org.carcinus.tools.bootstrap.login.LoginAction;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 
 public class QRLoginAction implements LoginAction, Logging {
@@ -43,39 +42,77 @@ public class QRLoginAction implements LoginAction, Logging {
 
         String qrUrl = applyQRCodeResponse.getUrl();
         String oauthKey = applyQRCodeResponse.getOauthKey();
-        String  qrPath = context.getConf("auto.lottery.login.qr.path") + "/" + System.currentTimeMillis() + ".png";
+        String qrPath = context.getConf("auto.lottery.login.qr.path") + "/" + System.currentTimeMillis() + ".png";
 //        QRCoder.encode(qrUrl);
         try {
             Preconditions.checkNotNull(qrUrl);
+            logger.info("*************请扫码*******************");
             QRCoderUtils.createQRCode(qrUrl, qrPath);
-
+            logger.info("*************请扫码*******************");
             loopOauth(oauthKey);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return false;
         }
-        logger.info("请扫码: {}", qrPath);
 
         context.setConf(KeyConstant.OAUTH_KEY, oauthKey);
 
         return true;
     }
 
-    private void loopOauth(String oauthKey) throws Exception {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("oauthKey", oauthKey);
-        while (loop0(URI.create(OAUTH_URL), params)) {
-
+    @SneakyThrows
+    public void countdown(long time) {
+        while (time-- > 0) {
+            System.out.print("倒计时 - " + time);
+            Thread.sleep(1000);
+            System.out.print("\r");
         }
     }
 
-    private boolean loop0(URI oauthUrl, HashMap<String, String> params) throws Exception {
-        HttpUtils.doPost(oauthUrl, params);
+    private void loopOauth(String oauthKey) throws Exception {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("oauthKey", oauthKey);
+        int retry = 10;
+        while (retry-- > 0) {
+            countdown(10);
+            if (loop0(URI.create(OAUTH_URL), params))break;
+        }
+    }
+
+    private boolean loop0(URI oauthUrl, HashMap<String, String> params) {
+        String responseStr = null;
+        OauthResponse oauthResponse = null;
+        try {
+            responseStr = HttpUtils.doPost(oauthUrl, params);
+            Preconditions.checkNotNull(responseStr);
+            oauthResponse = JsonUtils.readValue(responseStr, OauthResponse.class);
+            if (oauthResponse.getStatus()){
+                logger.info("登录成功 --- {}", oauthResponse.getTs());
+                return true;
+            }else {
+                logger.info(oauthResponse.message);
+            }
+        } catch (IOException e) {
+            logger.warn(responseStr);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
         return false;
     }
 
 
-//    public static class
+    public static class OauthResponse extends Response {
+        private String message;
+        private Data data;
+
+
+        public static class Data {
+            /**
+             * 游戏分站跨域登录url
+             */
+            private String url;
+        }
+    }
 
 
     public static class ApplyQRCodeResponse extends Response {

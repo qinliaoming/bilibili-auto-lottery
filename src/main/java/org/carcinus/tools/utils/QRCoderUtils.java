@@ -17,7 +17,7 @@ import java.util.Hashtable;
 public class QRCoderUtils {
 
 
-    private static int QR_CODE_SIZE = 1;
+    private static int QR_CODE_SIZE = 10;
     private static final Hashtable HINTS;
     private static String CHARSET = "UTF-8";
 
