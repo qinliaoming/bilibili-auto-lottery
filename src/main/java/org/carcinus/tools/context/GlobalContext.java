@@ -10,8 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GlobalContext {
 
-    private void setConf(Configuration conf) {
+    private void setConf(Configuration conf){
         this.conf = conf;
+    }
+    public void setConf(String key, String value) {
+        this.conf.setConf(key, value);
     }
 
     private Configuration conf;

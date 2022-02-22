@@ -18,12 +18,9 @@ public class BootStrapApplication implements Logging {
     }
 
     private static boolean login(GlobalContext context) {
-        String loginActionTypeStr = context.getConf("carcinus.auto.lottery.login.action.type");
+        String loginActionTypeStr = context.getConf("auto.lottery.login.action.type");
         try {
-            LoginActionType loginActionType = EnumUtils.parseIgnoreCase(LoginActionType.class, loginActionTypeStr);
-            LoginAction loginAction = LoginActionFactory.getInstance(loginActionType);
-            Preconditions.checkNotNull(loginAction, loginActionTypeStr + "not impl");
-
+            LoginAction loginAction = LoginActionFactory.getInstance(loginActionTypeStr);
             return loginAction.login(context);
         } catch (EnumConstantNotFountException e) {
             logger.info(e.getMessage(), e);

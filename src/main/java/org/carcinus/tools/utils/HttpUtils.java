@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.File;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class HttpUtils {
 
@@ -34,6 +35,19 @@ public class HttpUtils {
     public static String doPost(URI uri) throws Exception {
 
         HttpPost httpPost = new HttpPost(uri);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new Exception("请求失败...");
+            }
+            return EntityUtils.toString(response.getEntity(), "UTF-8");
+        }
+    }
+    public static String doPost(URI uri, Map<String, String> params) throws Exception {
+
+        HttpPost httpPost = new HttpPost(uri);
+//        params.forEach(httpPost.setEntity(new ););
+//        httpPost.setEntity(new StringEntity());
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(httpPost)) {
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
