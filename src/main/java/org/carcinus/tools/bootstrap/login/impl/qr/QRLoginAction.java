@@ -42,14 +42,12 @@ public class QRLoginAction implements LoginAction, Logging {
 
         String qrUrl = applyQRCodeResponse.getUrl();
         String oauthKey = applyQRCodeResponse.getOauthKey();
-        String qrPath = context.getConf("auto.lottery.login.qr.path") + "/" + System.currentTimeMillis() + ".png";
-//        QRCoder.encode(qrUrl);
         try {
             Preconditions.checkNotNull(qrUrl);
             logger.info("*************请扫码*******************");
-            QRCoderUtils.createQRCode(qrUrl, qrPath);
+            QRCoderUtils.createQRCode(qrUrl);
             logger.info("*************请扫码*******************");
-            loopOauth(oauthKey);
+            loopOauth(context, oauthKey);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return false;
@@ -69,17 +67,17 @@ public class QRLoginAction implements LoginAction, Logging {
         }
     }
 
-    private void loopOauth(String oauthKey) throws Exception {
+    private void loopOauth(GlobalContext context, String oauthKey) throws Exception {
         HashMap<String, String> params = new HashMap<>();
         params.put("oauthKey", oauthKey);
         int retry = 10;
         while (retry-- > 0) {
             countdown(10);
-            if (loop0(URI.create(OAUTH_URL), params))break;
+            if (loop0(context, URI.create(OAUTH_URL), params))break;
         }
     }
 
-    private boolean loop0(URI oauthUrl, HashMap<String, String> params) {
+    private boolean loop0(GlobalContext context, URI oauthUrl, HashMap<String, String> params) {
         String responseStr = null;
         OauthResponse oauthResponse = null;
         try {
@@ -88,6 +86,9 @@ public class QRLoginAction implements LoginAction, Logging {
             oauthResponse = JsonUtils.readValue(responseStr, OauthResponse.class);
             if (oauthResponse.getStatus()){
                 logger.info("登录成功 --- {}", oauthResponse.getTs());
+                String url = oauthResponse.getUrl();
+                logger.info("url --- {}", url);
+                parseUrl(context, url);
                 return true;
             }else {
                 logger.info(oauthResponse.message);
@@ -100,15 +101,42 @@ public class QRLoginAction implements LoginAction, Logging {
         return false;
     }
 
+    private void parseUrl(GlobalContext context, String url) {
+        String[] params = url.split("\\?")[1].split("&");
+        for (String param : params) {
+            String[] kv = param.split("=");
+            String key = kv[0];
+            String value = kv[1];
+            switch (key) {
+                case "DedeUserID":
+                    context.setConf(KeyConstant.DEDE_USER_ID, value);
+                    break;
+                case "DedeUserID__ckMd5":
+                    context.setConf(KeyConstant.DEDE_USER_ID_MD5, value);
+                    break;
+                case "SESSDATA":
+                    context.setConf(KeyConstant.SESSION_TOKEN, value);
+                    break;
+                case "bili_jct":
+                    context.setConf(KeyConstant.BILIBILI_JCT, value);
+                    break;
+                default:
+                    continue;
+            }
+        }
+    }
 
     public static class OauthResponse extends Response {
         private String message;
         private Data data;
 
-
+        public String getUrl() {
+            return this.data.url;
+        }
         public static class Data {
             /**
              * 游戏分站跨域登录url
+             * 游戏分站跨域登录url与cookie的值一一对应，可用于不方便设置cookie的场合提取使用
              */
             private String url;
         }

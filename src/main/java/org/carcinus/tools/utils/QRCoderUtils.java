@@ -33,17 +33,14 @@ public class QRCoderUtils {
      * 生成二維碼
      *
      * @param qrCodeData 二維碼字串
-     * @param filePath   檔案路徑
      * @throws WriterException
      * @throws IOException
      */
-    public static void createQRCode(String qrCodeData, String filePath)
+    public static void createQRCode(String qrCodeData)
             throws WriterException, IOException {
         BitMatrix matrix = new MultiFormatWriter().encode(
                 new String(qrCodeData.getBytes(CHARSET), CHARSET),
                 BarcodeFormat.QR_CODE, QR_CODE_SIZE, QR_CODE_SIZE, HINTS);
-//        MatrixToImageWriter.writeToPath(matrix, filePath.substring(filePath
-//                .lastIndexOf('.') + 1), new File(filePath).toPath());
         System.out.println(toAscii(matrix));
     }
 
