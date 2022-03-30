@@ -6,7 +6,13 @@ import org.carcinus.tools.bootstrap.login.impl.qr.QRLoginAction;
 import org.carcinus.tools.exception.EnumConstantNotFountException;
 import org.carcinus.tools.utils.EnumUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class LoginActionFactory {
+
+    private static Map<LoginActionType, LoginAction> loginActionCacheMap = new ConcurrentHashMap<>();
 
     public static LoginAction getInstance(String loginActionType) throws EnumConstantNotFountException {
         LoginActionType actionType = EnumUtils.parseIgnoreCase(LoginActionType.class, loginActionType);
@@ -16,11 +22,17 @@ public class LoginActionFactory {
 
     public static LoginAction getInstance(LoginActionType loginActionType) {
 
+        LoginAction loginAction = loginActionCacheMap.get(loginActionType);
+        if (loginAction != null) return loginAction;
         switch (loginActionType) {
             case QUICK_RESPONSE:
-                return new QRLoginAction();
+                QRLoginAction qrLoginAction = new QRLoginAction();
+                loginActionCacheMap.put(loginActionType, qrLoginAction);
+                return qrLoginAction;
             case PASSWORD:
-                return new PassWordLoginAction();
+                PassWordLoginAction passWordLoginAction = new PassWordLoginAction();
+                loginActionCacheMap.put(loginActionType, passWordLoginAction);
+                return passWordLoginAction;
             default:
                 return null;
         }

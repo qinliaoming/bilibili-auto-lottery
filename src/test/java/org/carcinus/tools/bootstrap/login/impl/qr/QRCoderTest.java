@@ -10,7 +10,7 @@ class QRCoderTest {
     @SneakyThrows
     @Test
     void testWrite() {
-        QRCoderUtils.createQRCode("https://passport.bilibili.com/qrcode/h5/login?oauthKey=2b057b96eacc1a32890bbfa6b6f2e83d", path);
+        QRCoderUtils.createQRCode("https://passport.bilibili.com/qrcode/h5/login?oauthKey=2b057b96eacc1a32890bbfa6b6f2e83d");
     }
 
     @SneakyThrows
