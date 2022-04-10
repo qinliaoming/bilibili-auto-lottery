@@ -1,12 +1,11 @@
 package org.carcinus.tools.bootstrap.login;
 
+import carcinus.code.common.exception.EnumConstantNotFountException;
+import carcinus.code.common.utils.EnumUtils;
 import com.google.common.base.Preconditions;
 import org.carcinus.tools.bootstrap.login.impl.PassWordLoginAction;
 import org.carcinus.tools.bootstrap.login.impl.qr.QRLoginAction;
-import org.carcinus.tools.exception.EnumConstantNotFountException;
-import org.carcinus.tools.utils.EnumUtils;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +15,7 @@ public class LoginActionFactory {
 
     public static LoginAction getInstance(String loginActionType) throws EnumConstantNotFountException {
         LoginActionType actionType = EnumUtils.parseIgnoreCase(LoginActionType.class, loginActionType);
-        Preconditions.checkNotNull(actionType, loginActionType + "not impl");
+        Preconditions.checkNotNull(actionType, loginActionType + " not impl");
         return getInstance(actionType);
     }
 

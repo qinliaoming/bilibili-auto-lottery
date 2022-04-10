@@ -1,6 +1,7 @@
 package org.carcinus.tools.bootstrap.watch;
 
 import org.carcinus.tools.context.GlobalContext;
+import org.carcinus.tools.utils.HttpUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,14 @@ public class WatchListOperator {
     private final String CREATE_FLOWING_GROUP_URL = "https://api.bilibili.com/x/relation/tag/create";
 
     public List<String> getWatchGroups(GlobalContext context) {
+        try {
+            String watchGroupStr = HttpUtils.doGet(GET_FLOWING_GROUP_URL, null);
 
+            System.out.println(watchGroupStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

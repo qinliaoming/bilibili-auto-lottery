@@ -1,16 +1,18 @@
 package org.carcinus.tools.bootstrap.login.impl.qr;
 
+import carcinus.code.common.utils.JsonUtils;
+import carcinus.code.common.utils.QRCoderUtils;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.carcinus.tools.bean.constant.KeyConstant;
 import org.carcinus.tools.bean.response.Response;
 import org.carcinus.tools.bootstrap.login.LoginAction;
 import org.carcinus.tools.context.GlobalContext;
 import org.carcinus.tools.utils.HttpUtils;
-import org.carcinus.tools.utils.JsonUtils;
-import org.carcinus.tools.utils.QRCoderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,19 +21,18 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class QRLoginAction implements LoginAction {
 
-    private final static String LOGIN_URL = "http://passport.bilibili.com/qrcode/getLoginUrl";
+    private final static String GET_LOGIN_URL = "http://passport.bilibili.com/qrcode/getLoginUrl";
     private final static String OAUTH_URL = "http://passport.bilibili.com/qrcode/getLoginInfo";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ApplyQRCodeResponse applyQRCode() {
 
         try {
-            String responseMessage = HttpUtils.doGet(URI.create(LOGIN_URL));
+            String responseMessage = HttpUtils.doGet(GET_LOGIN_URL, null);
             logger.info("responseMessage --- {}", responseMessage);
             return JsonUtils.readValue(responseMessage, ApplyQRCodeResponse.class);
         } catch (Exception e) {
@@ -51,16 +52,16 @@ public class QRLoginAction implements LoginAction {
         String oauthKey = applyQRCodeResponse.getOauthKey();
         try {
             Preconditions.checkNotNull(qrUrl);
-            logger.info("*************请扫码*******************");
-            QRCoderUtils.createQRCode(qrUrl);
-            logger.info("*************请扫码*******************");
+            logger.info("*************Please scan the code*******************");
+            QRCoderUtils.parseQRCodeToConsole(qrUrl);
+            logger.info("*************Please scan the code*******************");
             loopOauth(context, oauthKey);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return false;
         }
 
-        context.setConf(KeyConstant.OAUTH_KEY, oauthKey);
+//        context.setConf(KeyConstant.OAUTH_KEY, oauthKey);
 
         return true;
     }
@@ -68,7 +69,7 @@ public class QRLoginAction implements LoginAction {
     @SneakyThrows
     public void countdown(long time) {
         while (time-- > 0) {
-            System.out.print("倒计时 - " + time);
+            System.out.print("countdown - " + time);
             Thread.sleep(1000);
             System.out.print("\r");
         }
@@ -91,10 +92,8 @@ public class QRLoginAction implements LoginAction {
             Preconditions.checkNotNull(response);
             oauthResponse = JsonUtils.readValue(EntityUtils.toString(response.getEntity(), "UTF-8"), OauthResponse.class);
             if (oauthResponse.getStatus()){
-                logger.info("登录成功 --- {}", oauthResponse.getTs());
-//                String url = oauthResponse.getUrl();
-//                logger.info("url --- {}", url);
-                parseUrl(context, response);
+                logger.info("login successful --- {}", oauthResponse.getTs());
+//                extractCookieHeaders(context, response);
                 return true;
             }else {
                 logger.info(oauthResponse.message);
@@ -107,42 +106,12 @@ public class QRLoginAction implements LoginAction {
         return false;
     }
 
-    @Deprecated
-    private void parseUrl(GlobalContext context, String url) {
-        String[] params = url.split("\\?")[1].split("&");
-        for (String param : params) {
-            String[] kv = param.split("=");
-            String key = kv[0];
-            String value = kv[1];
-            switch (key) {
-                case "DedeUserID":
-                    context.setConf(KeyConstant.DEDE_USER_ID, value);
-                    break;
-                case "DedeUserID__ckMd5":
-                    context.setConf(KeyConstant.DEDE_USER_ID_MD5, value);
-                    break;
-                case "SESSDATA":
-                    context.setConf(KeyConstant.SESSION_TOKEN, value);
-                    break;
-                case "bili_jct":
-                    context.setConf(KeyConstant.BILIBILI_JCT, value);
-                    break;
-                default:
-                    continue;
-            }
-        }
-    }
-    private void parseUrl(GlobalContext context, HttpResponse response) {
-        List<String> cookies = Arrays.stream(response.getAllHeaders())
-                .map(header -> {
-                    String headerName = header.getName();
-                    if ("Set-Cookie".equalsIgnoreCase(headerName)) {
-                        return header.getValue();
-                    } else return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    private void extractCookieHeaders(GlobalContext context, HttpResponse response) {
 
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        List<Header> cookieHeaders = Arrays.stream(response.getHeaders("Set-Cookie"))
+                .map(header -> new BasicHeader("Cookie", header.getValue()))
+                .collect(Collectors.toList());
     }
     public static class OauthResponse extends Response {
         private String message;

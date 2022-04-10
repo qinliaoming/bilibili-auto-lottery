@@ -1,7 +1,6 @@
 package org.carcinus.tools.bootstrap.login.impl.qr;
 
 import lombok.SneakyThrows;
-import org.carcinus.tools.utils.QRCoderUtils;
 import org.junit.jupiter.api.Test;
 
 class QRCoderTest {

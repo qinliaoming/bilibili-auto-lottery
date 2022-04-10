@@ -1,25 +1,20 @@
 package org.carcinus.tools.utils;
 
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import java.io.File;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,96 +22,42 @@ import java.util.Map;
 public class HttpUtils {
 
     private static HttpClient httpClient;
-
     static {
+        httpClient = HttpClientBuilder
+                .create()
+                .build();
         httpClient = HttpClients.createDefault();
     }
-    public static String doGet(URI uri) throws Exception {
+
+    private static boolean judgeStatus(HttpResponse response) {
+        return !(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK);
+    }
+
+    public static String doGet(String uri, List<Header> headers) throws Exception {
         HttpGet httpGet = new HttpGet(uri);
+        if (headers != null) headers.forEach(httpGet::addHeader);
         HttpResponse response = httpClient.execute(httpGet);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("请求失败...");
+        if (judgeStatus(response)) {
+            return EntityUtils.toString(response.getEntity(), "UTF-8");
         }
-        return EntityUtils.toString(response.getEntity(), "UTF-8");
+        return null;
     }
 
-    public static String doPost(URI uri) throws Exception {
-
-        HttpPost httpPost = new HttpPost(uri);
-        HttpResponse response = httpClient.execute(httpPost);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("请求失败...");
-        }
-        return EntityUtils.toString(response.getEntity(), "UTF-8");
-    }
 
     private static List<BasicNameValuePair> buildParams(Map<String, String> params) {
-        ArrayList<BasicNameValuePair> nameValuePairs = new ArrayList<>();
+        ArrayList<BasicNameValuePair> nameValuePairs = new ArrayList<>(params.size());
         params.forEach((k, v) -> {
             nameValuePairs.add(new BasicNameValuePair(k, v));
         });
         return nameValuePairs;
     }
 
-    public static HttpResponse doPostResponse(URI uri, Map<String, String> params) throws Exception {
-
+    public static HttpResponse doPostResponse( URI uri, Map<String, String> params) throws Exception {
         HttpPost httpPost = new HttpPost(uri);
         List<BasicNameValuePair> nameValuePairs = buildParams(params);
         httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         HttpResponse response = httpClient.execute(httpPost);
         return response;
     }
-    public static String doPost(URI uri, Map<String, String> params) throws Exception {
 
-        HttpPost httpPost = new HttpPost(uri);
-
-        List<BasicNameValuePair> nameValuePairs = buildParams(params);
-        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
-        HttpResponse response = httpClient.execute(httpPost);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("请求失败...");
-        }
-        return EntityUtils.toString(response.getEntity(), "UTF-8");
-    }
-
-    public static String doPostJson(URI uri, String json) throws Exception {
-
-        HttpPost httpPost = new HttpPost(uri);
-        httpPost.setHeader("Content-Type", "application/json;charset=utf-8");
-        StringEntity entity = new StringEntity(json, StandardCharsets.UTF_8);
-        entity.setContentType("application/json;charset=utf-8");
-        httpPost.setEntity(entity);
-
-        HttpResponse response = httpClient.execute(httpPost);
-        Header[] allHeaders = response.getAllHeaders();
-
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("请求失败...");
-        }
-        return EntityUtils.toString(response.getEntity(), "UTF-8");
-
-    }
-
-    public static String doPostFile(URI uri, File file) throws Exception {
-        HttpPost httpPost = new HttpPost(uri);
-        FileBody bin = new FileBody(file);
-        HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bin).build();
-        httpPost.setEntity(reqEntity);
-        HttpResponse response = httpClient.execute(httpPost);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("请求失败...");
-        }
-        return EntityUtils.toString(response.getEntity(), "UTF-8");
-    }
-
-    public static String doPostStream(URI uri, byte[] bytes) throws Exception {
-        HttpPost httpPost = new HttpPost(uri);
-        httpPost.setHeader("Content-Type", ContentType.APPLICATION_OCTET_STREAM.getMimeType());
-        httpPost.setEntity(new ByteArrayEntity(bytes));
-        HttpResponse response = httpClient.execute(httpPost);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new Exception("请求失败...");
-        }
-        return EntityUtils.toString(response.getEntity(), "UTF-8");
-    }
 }

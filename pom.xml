@@ -19,6 +19,13 @@
   </properties>
 
   <dependencies>
+<!--    carcinus code-->
+    <dependency>
+      <groupId>carcinus.code</groupId>
+      <artifactId>common</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <!--    carcinus code-->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
