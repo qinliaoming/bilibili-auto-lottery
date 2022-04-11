@@ -35,6 +35,10 @@ public class GlobalContext {
     public String getConf(String key) {
         return conf.getConf(key);
     }
+    public String getConf(String key, String defaultValue) {
+        String value = this.conf.getConf(key);
+        return value == null ? defaultValue : value;
+    }
 
     public List<Header> getCookieHeaders() {
         if (cookieHeaders == null) return new ArrayList<>();

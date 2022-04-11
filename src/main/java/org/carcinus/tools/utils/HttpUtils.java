@@ -14,6 +14,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +30,18 @@ public class HttpUtils {
         httpClient = HttpClients.createDefault();
     }
 
-    private static boolean judgeStatus(HttpResponse response) {
-        return !(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK);
+    public static boolean judgeStatus(HttpResponse response) {
+        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
 
-    public static String doGet(String uri, List<Header> headers) throws Exception {
+    public static String getEntity(HttpResponse response) throws IOException {
+        return EntityUtils.toString(response.getEntity(), "UTF-8");
+    }
+    public static HttpResponse doGet(String uri) throws IOException {
         HttpGet httpGet = new HttpGet(uri);
-        if (headers != null) headers.forEach(httpGet::addHeader);
         HttpResponse response = httpClient.execute(httpGet);
         if (judgeStatus(response)) {
-            return EntityUtils.toString(response.getEntity(), "UTF-8");
+            return response;
         }
         return null;
     }
@@ -52,7 +55,7 @@ public class HttpUtils {
         return nameValuePairs;
     }
 
-    public static HttpResponse doPostResponse( URI uri, Map<String, String> params) throws Exception {
+    public static HttpResponse doPost(String uri, Map<String, String> params) throws Exception {
         HttpPost httpPost = new HttpPost(uri);
         List<BasicNameValuePair> nameValuePairs = buildParams(params);
         httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
