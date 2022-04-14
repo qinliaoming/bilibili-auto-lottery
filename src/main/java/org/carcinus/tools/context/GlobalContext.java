@@ -1,10 +1,7 @@
 package org.carcinus.tools.context;
 
-import org.apache.http.Header;
 import org.carcinus.tools.conf.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +9,6 @@ public class GlobalContext {
 
     private Configuration conf;
     private boolean readyState;
-    private List<Header> cookieHeaders;
     private GlobalContext() {
     }
 
@@ -24,11 +20,11 @@ public class GlobalContext {
         this.readyState = readyState;
     }
 
-    private void setConf(Configuration conf){
+    private synchronized void setConf(Configuration conf){
         this.conf = conf;
     }
 
-    public void setConf(String key, String value) {
+    public synchronized void setConf(String key, String value) {
         this.conf.setConf(key, value);
     }
 
@@ -40,14 +36,6 @@ public class GlobalContext {
         return value == null ? defaultValue : value;
     }
 
-    public List<Header> getCookieHeaders() {
-        if (cookieHeaders == null) return new ArrayList<>();
-        return cookieHeaders;
-    }
-
-    public void setCookieHeaders(List<Header> cookieHeaders) {
-        this.cookieHeaders = cookieHeaders;
-    }
 
     public static GlobalContextBuilder newBuilder() {
         return new GlobalContextBuilder();

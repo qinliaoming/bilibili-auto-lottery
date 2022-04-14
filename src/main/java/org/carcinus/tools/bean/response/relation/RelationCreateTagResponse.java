@@ -1,5 +1,6 @@
 package org.carcinus.tools.bean.response.relation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -13,11 +14,11 @@ public class RelationCreateTagResponse {
     private TagData data;
 
     private class TagData {
-
-        private int tagid;
+        @JsonProperty("tagid")
+        private int tagId;
     }
 
     public int getTagId() {
-        return this.data.tagid;
+        return this.data.tagId;
     }
 }

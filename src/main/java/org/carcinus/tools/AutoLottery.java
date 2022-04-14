@@ -14,13 +14,14 @@ public class AutoLottery {
 
         GlobalContext globalContext = GlobalContext.newBuilder()
                 .getOrCreate();
+        AutoLotteryApplication autoLotteryApplication = new AutoLotteryApplication(globalContext);
         try {
             while (true) {
                 //判断是否就绪
                 boolean readyStatus = globalContext.isReadyStatus();
                 log.info("readyStatus --- {}", readyStatus);
                 if (readyStatus) {
-
+                    autoLotteryApplication.start();
                 } else {
                     //开始引导前置条件
                     log.info("start bootstrap...");

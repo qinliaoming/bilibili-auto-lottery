@@ -13,7 +13,6 @@ import org.carcinus.tools.utils.HttpUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class LoginApi {
 
@@ -81,7 +80,7 @@ public class LoginApi {
     }
 
     private static LoginUrlData getLoginUrlData() throws IOException {
-        String entity = HttpUtils.getEntity(Objects.requireNonNull(HttpUtils.doGet(GET_LOGIN_URI)));
+        String entity = HttpUtils.doGetEntity(GET_LOGIN_URI);
         LoginUrlResponse qrLoginUrlResponse = JsonUtils.readValue(entity, LoginUrlResponse.class);
         return qrLoginUrlResponse.getData();
     }

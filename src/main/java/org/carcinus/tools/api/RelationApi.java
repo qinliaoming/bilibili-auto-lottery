@@ -21,8 +21,7 @@ public class RelationApi {
     public static int getLotteryTagId() {
 
         try {
-            HttpResponse response = HttpUtils.doGet(RELATION_TAGS_URL);
-            String entity = HttpUtils.getEntity(response);
+            String entity = HttpUtils.doGetEntity(RELATION_TAGS_URL);
             RelationTagsResponse relationTagsResponse = JsonUtils.readValue(entity, RelationTagsResponse.class);
 
             Tag[] tags = relationTagsResponse.getData();

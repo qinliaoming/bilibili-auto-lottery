@@ -1,21 +1,16 @@
 package org.carcinus.tools.utils;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +22,6 @@ public class HttpUtils {
         httpClient = HttpClientBuilder
                 .create()
                 .build();
-        httpClient = HttpClients.createDefault();
     }
 
     public static boolean judgeStatus(HttpResponse response) {
@@ -36,6 +30,11 @@ public class HttpUtils {
 
     public static String getEntity(HttpResponse response) throws IOException {
         return EntityUtils.toString(response.getEntity(), "UTF-8");
+    }
+    public static String doGetEntity(String uri) throws IOException {
+        HttpResponse response = doGet(uri);
+        assert response != null;
+        return getEntity(response);
     }
     public static HttpResponse doGet(String uri) throws IOException {
         HttpGet httpGet = new HttpGet(uri);
