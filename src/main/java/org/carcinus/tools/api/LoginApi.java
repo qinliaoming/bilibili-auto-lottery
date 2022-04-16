@@ -32,10 +32,10 @@ public class LoginApi {
         String oauthKey = qrLoginUrlData.getOauthKey();
         params.put("oauthKey", oauthKey);
 
-        return loopOauth(oauthKey);
+        return loopOauth();
     }
 
-    private static boolean loopOauth(String oauthKey) throws Exception {
+    private static boolean loopOauth() throws Exception {
         int retry = 3;
         while (retry-- > 0) {
             if (judgeLoginStatus(params)) return true;
