@@ -1,12 +1,11 @@
 package org.carcinus.tools.bean.response.relation;
 
 import lombok.Data;
+import org.carcinus.tools.bean.response.Response;
 
 @Data
-public class RelationTagsResponse {
-    private int code;
-    private String message;
-    private long ttl;
+public class RelationTagsResponse extends Response {
+
     /**
      * tags
      */

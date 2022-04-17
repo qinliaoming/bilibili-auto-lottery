@@ -1,6 +1,11 @@
 package org.carcinus.tools.api;
 
+import org.carcinus.tools.bean.response.article.ArticleMeta;
+import org.carcinus.tools.bean.response.dynamic.DynamicCard;
 import org.carcinus.tools.context.GlobalContext;
+
+import java.io.IOException;
+import java.util.List;
 
 public class AutoLotteryApi {
 
@@ -19,5 +24,46 @@ public class AutoLotteryApi {
             lotteryTagId = RelationApi.createLotteryTag();
         }
         return lotteryTagId;
+    }
+
+    public static List<ArticleMeta> getArticleMetaByUid(int uid) {
+        try {
+            return ArticleApi.getArticleMetaByUid(uid);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static String getReadArticleUrl(int articleId) {
+        return ArticleApi.getReadArticleUrl(articleId);
+    }
+
+    public static List<DynamicCard> getSpaceHistory(int uid) {
+        try {
+            return DynamicApi.getSpaceHistory(uid);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static DynamicCard getDynamicDetail(String dynamicId) {
+        try {
+            return DynamicApi.getDynamicDetail(dynamicId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static DynamicCard getDynamicDetail(int dynamicId) {
+        try {
+            return DynamicApi.getDynamicDetail(dynamicId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

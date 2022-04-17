@@ -1,13 +1,11 @@
 package org.carcinus.tools.bean.response.dynamic;
 
 import lombok.Getter;
+import org.carcinus.tools.bean.response.Response;
 
 import java.util.List;
 
-public class SpaceHistoryDynamicResponse {
-    private int code;
-    private String msg;
-    private String message;
+public class SpaceHistoryDynamicResponse extends Response {
 
     private DynamicMetaData data;
 

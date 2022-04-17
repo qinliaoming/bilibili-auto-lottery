@@ -1,25 +1,10 @@
 package org.carcinus.tools.bean.response.login;
 
 
-public class LoginUrlResponse {
+import org.carcinus.tools.bean.response.Response;
 
-    protected int code;
+public class LoginUrlResponse extends Response {
 
-    protected boolean status;
-
-    protected long ts;
-
-    public int getCode() {
-        return code;
-    }
-
-    public boolean getStatus() {
-        return status;
-    }
-
-    public long getTs() {
-        return ts;
-    }
 
     private LoginUrlData data;
 

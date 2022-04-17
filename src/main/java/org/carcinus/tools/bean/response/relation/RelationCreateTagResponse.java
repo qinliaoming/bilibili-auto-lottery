@@ -2,12 +2,11 @@ package org.carcinus.tools.bean.response.relation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.carcinus.tools.bean.response.Response;
 
 @Data
-public class RelationCreateTagResponse {
-    private int code;
-    private String message;
-    private long ttl;
+public class RelationCreateTagResponse extends Response {
+
     /**
      * tags
      */
