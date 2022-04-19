@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class LotteryUpJLDCJ extends AbstractLotteryUp {
 
-    public LotteryUpJLDCJ(String name, int uid) {
+    public LotteryUpJLDCJ() {
         super("锦鲤大抽奖", 652666095);
     }
 

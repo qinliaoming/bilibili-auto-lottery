@@ -11,22 +11,21 @@ import java.util.List;
 /**
  *
  */
-public abstract class AbstractLotteryUp implements LotteryEventObservable {
-    protected String uname;
-    protected int uid;
-    private List<LotteryEventObserver> observers;
+public abstract class AbstractLotteryUp extends LotteryUp implements LotteryEventObservable{
+
+
+    private final List<LotteryEventObserver> observers;
 
 
     public abstract List<LotteryEvent> getLotteryEvents(GlobalContext context);
 
-    public void checkDynamic(GlobalContext context) {
+    public void update(GlobalContext context) {
         List<LotteryEvent> events = getLotteryEvents(context);
         if (events != null) observers.forEach(observer -> observer.callback(events));
     }
 
     public AbstractLotteryUp(String name, int uid) {
-        this.uname = name;
-        this.uid = uid;
+        super(name, uid);
         observers = new ArrayList<>(3);
     }
 
