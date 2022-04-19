@@ -53,6 +53,14 @@ public class HttpUtils {
         });
         return nameValuePairs;
     }
+    public static String doPostEntity(String uri, Map<String, String> params) throws Exception {
+        HttpResponse response = doPost(uri, params);
+        if(judgeStatus(response)){
+            return getEntity(response);
+        }
+        return null;
+    }
+
 
     public static HttpResponse doPost(String uri, Map<String, String> params) throws Exception {
         HttpPost httpPost = new HttpPost(uri);

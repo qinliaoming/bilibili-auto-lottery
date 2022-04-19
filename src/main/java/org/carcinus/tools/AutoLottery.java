@@ -36,7 +36,7 @@ public class AutoLottery {
     private static void bootstrap(GlobalContext context) {
         boolean isLoginSuccess = AutoLotteryApi.login(context);
         if (isLoginSuccess) {
-            int lotteryTagId = AutoLotteryApi.getLotteryTagId();
+            int lotteryTagId = AutoLotteryApi.getLotteryTagId(context);
             if (lotteryTagId != -1) {
                 context.setConf("carcinus.auto.lottery.tag.id", String.valueOf(lotteryTagId));
                 context.setReadyStatus(true);

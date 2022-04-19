@@ -1,5 +1,8 @@
 package org.carcinus.tools.bean.response;
 
+import lombok.Data;
+
+@Data
 public class Response {
     protected int code;
     protected String message;

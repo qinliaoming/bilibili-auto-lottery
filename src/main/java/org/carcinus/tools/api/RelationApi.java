@@ -2,9 +2,13 @@ package org.carcinus.tools.api;
 
 import carcinus.code.common.utils.JsonUtils;
 import org.apache.http.HttpResponse;
+import org.carcinus.tools.bean.constant.KeyConstant;
+import org.carcinus.tools.bean.response.Response;
 import org.carcinus.tools.bean.response.relation.RelationCreateTagResponse;
+import org.carcinus.tools.bean.response.relation.RelationModifyActionType;
 import org.carcinus.tools.bean.response.relation.RelationTagsResponse;
 import org.carcinus.tools.bean.response.relation.Tag;
+import org.carcinus.tools.context.GlobalContext;
 import org.carcinus.tools.utils.HttpUtils;
 
 import java.io.IOException;
@@ -16,6 +20,7 @@ import java.util.Optional;
 public class RelationApi {
     private static final String RELATION_TAGS_URL = "https://api.bilibili.com/x/relation/tags";
     private static final String RELATION_TAG_CREATE_URL = "https://api.bilibili.com/x/relation/tag/create";
+    private static final String RELATION_TAG_MODIFY_URL = "https://api.bilibili.com/x/relation/modify";
     private static final Map<String, String> params = new HashMap<>();
 
     public static int getLotteryTagId() {
@@ -38,11 +43,14 @@ public class RelationApi {
     }
 
 
-    public static int createLotteryTag() {
+    public static int createLotteryTag(GlobalContext context) {
         try {
 
-            Map<String, String> params = getParams();
-
+            Map<String, String> params = new HashMap<>();
+            String csrf = context.getConf(KeyConstant.BILIBILI_JCT);
+            params.put("tag", "lottery");
+            params.put("jsonp", "jsonp");
+            params.put("csrf", csrf);
             HttpResponse response = HttpUtils.doPost(RELATION_TAG_CREATE_URL, params);
 
             String entity = HttpUtils.getEntity(response);
@@ -57,12 +65,17 @@ public class RelationApi {
         return -1;
     }
 
-    private static Map<String, String> getParams() {
-        if (params.size() == 0) {
-            params.put("tag", "lottery");
-            params.put("jsonp", "jsonp");
-            params.put("csrf", "bb191d7671fc2d2d94c07757cf3a1161");
-        }
-        return params;
+    public static boolean modifyRelation(GlobalContext context, String uid, RelationModifyActionType actionType) throws Exception {
+
+        String csrf = context.getConf(KeyConstant.BILIBILI_JCT);
+        Map<String, String> params = new HashMap<>();
+
+        params.put("fid", uid);
+        params.put("act", actionType.getValue());
+        params.put("csrf", csrf);
+
+        String entity = HttpUtils.doPostEntity(uid, params);
+        Response response = JsonUtils.readValue(entity, Response.class);
+        return response.getCode() == 0;
     }
 }

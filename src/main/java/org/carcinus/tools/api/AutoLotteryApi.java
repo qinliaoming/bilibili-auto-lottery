@@ -18,10 +18,10 @@ public class AutoLotteryApi {
         return false;
     }
 
-    public static int getLotteryTagId() {
+    public static int getLotteryTagId(GlobalContext context) {
         int lotteryTagId = RelationApi.getLotteryTagId();
         if (lotteryTagId == -1) {
-            lotteryTagId = RelationApi.createLotteryTag();
+            lotteryTagId = RelationApi.createLotteryTag(context);
         }
         return lotteryTagId;
     }
@@ -36,8 +36,13 @@ public class AutoLotteryApi {
     }
 
 
-    public static String getReadArticleUrl(int articleId) {
-        return ArticleApi.getReadArticleUrl(articleId);
+    public static List<String> getReadArticleUrl(int articleId) {
+        try {
+            return ArticleApi.getReadArticleUrl(articleId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static List<DynamicCard> getSpaceHistory(int uid) {

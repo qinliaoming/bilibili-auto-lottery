@@ -4,13 +4,16 @@ import carcinus.code.common.utils.JsonUtils;
 import carcinus.code.common.utils.QRCoderUtils;
 import com.google.zxing.WriterException;
 import lombok.SneakyThrows;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.carcinus.tools.bean.constant.KeyConstant;
 import org.carcinus.tools.bean.response.login.LoginUrlResponse;
 import org.carcinus.tools.bean.response.login.LoginUrlResponse.LoginUrlData;
 import org.carcinus.tools.context.GlobalContext;
 import org.carcinus.tools.utils.HttpUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,13 +35,13 @@ public class LoginApi {
         String oauthKey = qrLoginUrlData.getOauthKey();
         params.put("oauthKey", oauthKey);
 
-        return loopOauth();
+        return loopOauth(context);
     }
 
-    private static boolean loopOauth() throws Exception {
+    private static boolean loopOauth(GlobalContext context) throws Exception {
         int retry = 3;
         while (retry-- > 0) {
-            if (judgeLoginStatus(params)) return true;
+            if (oauthLoginStatus(params, context)) return true;
             countdown(retry * 5);
             retry++;
         }
@@ -54,16 +57,41 @@ public class LoginApi {
         }
     }
 
-    private static boolean judgeLoginStatus(Map<String, String> params) throws Exception {
+    private static boolean oauthLoginStatus(Map<String, String> params, GlobalContext context) throws Exception {
 
         HttpResponse response = HttpUtils.doPost(GET_LOGIN_INFO_URI, params);
 
         String entity = HttpUtils.getEntity(response);
 
         if (entity.contains("true")) {
-            return true;
+            Header[] headers = response.getHeaders("Set-Cookie");
+            return parseHeaders(headers, context);
         }
         return false;
+    }
+
+    private static boolean parseHeaders(Header[] headers, GlobalContext context) {
+        try {
+            Arrays.stream(headers)
+                    .map(header -> header.getValue().split(";")[0])
+                    .forEach(value -> {
+                        String[] values = value.split("=");
+                        String cookieKey = values[0];
+                        String cookieValue = values[1];
+                        switch (cookieKey) {
+                            case "DedeUserID":
+                                context.setConf(KeyConstant.DEDE_USER_ID, cookieValue);
+                                break;
+                            case "bili_jct":
+                                context.setConf(KeyConstant.BILIBILI_JCT, cookieValue);
+                                break;
+                            default:
+                        }
+                    });
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     private static void parseQrCode(GlobalContext context, String qrLoginUrlDataUrl) throws IOException, WriterException {

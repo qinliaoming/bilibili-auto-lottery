@@ -43,6 +43,7 @@ public abstract class AbstractLotteryUp implements LotteryEventObservable {
     protected LotteryEvent getLotteryEvent(String dynamicId){
 
 
+
         return null;
     }
 }
