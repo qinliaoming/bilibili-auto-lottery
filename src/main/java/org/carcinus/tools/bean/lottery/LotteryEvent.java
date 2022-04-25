@@ -1,16 +1,46 @@
 package org.carcinus.tools.bean.lottery;
 
+import lombok.Data;
+
+import java.util.Objects;
+
 /**
  * 抽奖活动的基本单元
  */
-public class LotteryEvent {
+@Data
+public class LotteryEvent implements Comparable<LotteryEvent> {
+    private int lotteryId;
     private int uid;
-    /**
-     * 动态类型, 目前已知:
-     * 1 -- 转发动态
-     * 8 -- 投稿视频
-     * 64 -- 专栏
-     */
-    private int type;
-    private String dynamicId;
+    private int dynamicId;
+    private long lotteryTime;
+
+    private String firstPrize;
+    private String secondPrize;
+    private String thirdPrize;
+
+    public boolean isOpen() {
+        return isOpen(System.currentTimeMillis());
+    }
+
+    public boolean isOpen(long currentTimeMillis) {
+        return this.lotteryTime < currentTimeMillis;
+    }
+
+    @Override
+    public int compareTo(LotteryEvent event) {
+        return (int) (event.lotteryTime - this.lotteryTime);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LotteryEvent event = (LotteryEvent) o;
+        return lotteryId == event.lotteryId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lotteryId);
+    }
 }

@@ -1,38 +1,51 @@
 package org.carcinus.tools;
 
+import org.carcinus.tools.bean.constant.KeyConstant;
+import org.carcinus.tools.bean.lottery.LotteryEvent;
 import org.carcinus.tools.context.GlobalContext;
-import org.carcinus.tools.observer.LotteryEventObservable;
-import org.carcinus.tools.observer.impl.LotteryEventSubscribe;
-import org.carcinus.tools.observer.impl.up.LotteryUpJLDCJ;
+import org.carcinus.tools.publisher.LotteryEventPublisher;
+import org.carcinus.tools.publisher.PublisherThread;
+import org.carcinus.tools.publisher.impl.ArticleLotteryEventPublisher;
+import org.carcinus.tools.subscriber.LotteryEventSubscriber;
+import org.carcinus.tools.subscriber.SubscriberThread;
+import org.carcinus.tools.subscriber.impl.MemoryLotteryEventSubscriber;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 
-public class AutoLotteryApplication {
+public class AutoLotteryApplication implements AutoCloseable{
     private GlobalContext context;
-    private List<LotteryEventObservable> observables;
-    private final long SLEEP_TIME = 43200000;
+    private final PublisherThread publisherThread;
+    private final SubscriberThread subscriberThread;
+
     public AutoLotteryApplication(GlobalContext context) {
         this.context = context;
-        observables = new ArrayList<>();
+        PriorityQueue<LotteryEvent> events = new PriorityQueue<>();
+        LotteryEventSubscriber memoryLotteryEventSubscriber = new MemoryLotteryEventSubscriber(context, events);
+        subscriberThread = new SubscriberThread(events);
+
+        List<LotteryEventPublisher> publishers = new ArrayList<>();
+        String[] ids = context.getConf(KeyConstant.LOTTERY_UP_IDS).split(",");
+        Arrays.stream(ids)
+                .map(Integer::parseInt)
+                .map(ArticleLotteryEventPublisher::new)
+                .peek(publisher -> publisher.addSubscriber(memoryLotteryEventSubscriber))
+                .forEach(publishers::add);
+        publisherThread = new PublisherThread(publishers);
     }
 
     public void start() throws InterruptedException {
-        init();
-        while (true) {
-            observables.forEach(lotteryEventObservable -> {
-                lotteryEventObservable.update(context);
-            });
-            Thread.sleep(SLEEP_TIME);
+        if (publisherThread.isAlive()) {
+            publisherThread.start();
+        }
+        if (subscriberThread.isAlive()){
+            subscriberThread.start();
         }
     }
 
-    private void init() {
-        if (observables != null) {
-            LotteryEventSubscribe lotteryEventSubscribe = new LotteryEventSubscribe();
-            LotteryUpJLDCJ lotteryUp = new LotteryUpJLDCJ();
-            lotteryUp.addObserver(lotteryEventSubscribe);
-            observables.add(lotteryUp);
-        }
+    @Override
+    public void close() throws Exception {
     }
 }

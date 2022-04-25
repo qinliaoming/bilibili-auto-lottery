@@ -24,7 +24,7 @@ public class ArticleApi {
     }
 
 
-    public static List<String> getReadArticleUrl(int articleId) throws IOException {
+    public static List<String> getDynamicIdInArticle(int articleId) throws IOException {
         String readArticleUrl = String.format(READ_ARTICLE_URL_FORMATTED, articleId);
         return Jsoup
                 .connect(readArticleUrl)

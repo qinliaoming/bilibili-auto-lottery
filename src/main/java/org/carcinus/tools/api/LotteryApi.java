@@ -19,6 +19,16 @@ public class LotteryApi {
         NoticeLotteryResponse noticeLotteryResponse = JsonUtils.readValue(entity, NoticeLotteryResponse.class);
         NoticeLotteryData data = noticeLotteryResponse.getData();
 
-        return null;
+        return convertLotteryEvent(data);
+    }
+    private static LotteryEvent convertLotteryEvent(NoticeLotteryData data) {
+        LotteryEvent event = new LotteryEvent();
+        event.setLotteryId(data.getLotteryId());
+        event.setUid(data.getUid());
+        event.setDynamicId(data.getBusinessId());
+        event.setFirstPrize(data.getFirstPrizeCmt());
+        event.setSecondPrize(data.getSecondPrizeCmt());
+        event.setThirdPrize(data.getThirdPrizeCmt());
+        return event;
     }
 }

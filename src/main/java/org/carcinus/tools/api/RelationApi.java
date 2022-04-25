@@ -21,7 +21,7 @@ public class RelationApi {
     private static final String RELATION_TAGS_URL = "https://api.bilibili.com/x/relation/tags";
     private static final String RELATION_TAG_CREATE_URL = "https://api.bilibili.com/x/relation/tag/create";
     private static final String RELATION_TAG_MODIFY_URL = "https://api.bilibili.com/x/relation/modify";
-    private static final Map<String, String> params = new HashMap<>();
+    private static Map<String, String> modifyRelationParams;
 
     public static int getLotteryTagId() {
 
@@ -68,13 +68,13 @@ public class RelationApi {
     public static boolean modifyRelation(GlobalContext context, String uid, RelationModifyActionType actionType) throws Exception {
 
         String csrf = context.getConf(KeyConstant.BILIBILI_JCT);
-        Map<String, String> params = new HashMap<>();
 
-        params.put("fid", uid);
-        params.put("act", actionType.getValue());
-        params.put("csrf", csrf);
+        if(modifyRelationParams == null) modifyRelationParams = new HashMap<>();
+        modifyRelationParams.put("fid", uid);
+        modifyRelationParams.put("act", actionType.getValue());
+        modifyRelationParams.put("csrf", csrf);
 
-        String entity = HttpUtils.doPostEntity(uid, params);
+        String entity = HttpUtils.doPostEntity(uid, modifyRelationParams);
         Response response = JsonUtils.readValue(entity, Response.class);
         return response.getCode() == 0;
     }

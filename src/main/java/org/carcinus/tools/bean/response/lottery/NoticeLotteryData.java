@@ -8,6 +8,8 @@ public class NoticeLotteryData {
     @JsonProperty("business_id")
     private int businessId;
 
+    @JsonProperty("sender_uid")
+    private int uid;
     @JsonProperty("lottery_id")
     private int lotteryId;
     /**
