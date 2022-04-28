@@ -16,15 +16,13 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class AutoLotteryApplication implements AutoCloseable{
-    private GlobalContext context;
     private final PublisherThread publisherThread;
     private final SubscriberThread subscriberThread;
 
     public AutoLotteryApplication(GlobalContext context) {
-        this.context = context;
         PriorityQueue<LotteryEvent> events = new PriorityQueue<>();
         LotteryEventSubscriber memoryLotteryEventSubscriber = new MemoryLotteryEventSubscriber(context, events);
-        subscriberThread = new SubscriberThread(events);
+        subscriberThread = new SubscriberThread(context, events);
 
         List<LotteryEventPublisher> publishers = new ArrayList<>();
         String[] ids = context.getConf(KeyConstant.LOTTERY_UP_IDS).split(",");

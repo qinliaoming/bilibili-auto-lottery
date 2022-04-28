@@ -1,18 +1,14 @@
 package org.carcinus.tools.api;
 
-import carcinus.code.common.utils.JsonUtils;
-import org.carcinus.tools.bean.constant.KeyConstant;
 import org.carcinus.tools.bean.lottery.LotteryEvent;
-import org.carcinus.tools.bean.response.Response;
 import org.carcinus.tools.bean.response.article.ArticleMeta;
 import org.carcinus.tools.bean.response.dynamic.DynamicCard;
+import org.carcinus.tools.bean.response.lottery.LotteryResult;
 import org.carcinus.tools.bean.response.relation.RelationModifyActionType;
 import org.carcinus.tools.context.GlobalContext;
-import org.carcinus.tools.utils.HttpUtils;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class AutoLotteryApi {
@@ -82,7 +78,15 @@ public class AutoLotteryApi {
 
     public static LotteryEvent getLotteryEvent(String dynamicId) {
         try {
-            return LotteryApi.getNoticeLottery(dynamicId);
+            return LotteryApi.getLotteryEvent(dynamicId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static LotteryResult getLotteryResult(String dynamicId) {
+        try {
+            return LotteryApi.getLotteryResult(dynamicId);
         } catch (IOException e) {
             e.printStackTrace();
         }

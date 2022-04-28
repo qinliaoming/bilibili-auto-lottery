@@ -34,6 +34,14 @@
       <version>1.0.0</version>
     </dependency>
     <!--    carcinus code-->
+    <!--        email-->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-email</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <!--        email-->
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
