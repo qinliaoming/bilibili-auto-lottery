@@ -13,7 +13,7 @@ public class DynamicDetailResponse extends Response {
     }
 
 
-    private class DynamicMetaData {
+    public static class DynamicMetaData {
         @Getter
         private DynamicCard card;
     }

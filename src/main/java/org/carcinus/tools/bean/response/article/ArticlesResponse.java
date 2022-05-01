@@ -10,7 +10,7 @@ public class ArticlesResponse extends Response {
     public List<ArticleMeta> getArticles() {
         return this.data.getArticles();
     }
-    private class ArticleData {
+    private static class ArticleData {
         private List<ArticleMeta> articles;
 
         public List<ArticleMeta> getArticles() {

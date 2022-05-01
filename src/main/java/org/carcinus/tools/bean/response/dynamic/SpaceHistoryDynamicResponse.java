@@ -16,7 +16,7 @@ public class SpaceHistoryDynamicResponse extends Response {
     public DynamicMetaData getData() {
         return data;
     }
-    public class DynamicMetaData {
+    public static class DynamicMetaData {
 
         public List<DynamicCard> getCards() {
             return this.cards;
