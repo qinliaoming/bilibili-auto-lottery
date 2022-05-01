@@ -8,13 +8,16 @@ import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ArticleApi {
 
     private static final String LIST_ARTICLES_URL_FORMATTED = "https://api.bilibili.com/x/space/article?mid=%d&sort=publish_time";
     private static final String READ_ARTICLE_URL_FORMATTED = "https://www.bilibili.com/read/cv%s";
-
+    private static final Pattern patten = Pattern.compile("\\d{17,}+");
     public static List<ArticleMeta> getArticleMetaByUid(int uid) throws IOException {
         String listArticlesUrl = String.format(LIST_ARTICLES_URL_FORMATTED, uid);
 
@@ -34,8 +37,11 @@ public class ArticleApi {
                 .stream()
                 .map(element -> element.attr("href"))
                 .map(link -> {
-                    if (link.startsWith(""))
+                    Matcher matcher = patten.matcher(link);
+                    if (matcher.find()) return matcher.group();
+                    return null;
                 })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
