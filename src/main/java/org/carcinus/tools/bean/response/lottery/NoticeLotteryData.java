@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class NoticeLotteryData {
     @JsonProperty("business_id")
-    private int businessId;
+    private long businessId;
 
     @JsonProperty("sender_uid")
     private int uid;

@@ -52,12 +52,13 @@ public class ArticleLotteryEventPublisher implements LotteryEventPublisher {
                 List<String> dynamicIds = AutoLotteryApi.getDynamicIdInArticle(articleMetaId);
                 log.info("uid --- {}", uid);
                 log.info("articleMetaId --- {}", articleMetaId);
-                List<LotteryEvent> collect = new ArrayList<>();
+                List<LotteryEvent> events = new ArrayList<>();
                 for (String dynamicId : dynamicIds) {
                     LotteryEvent lotteryEvent = AutoLotteryApi.getLotteryEvent(dynamicId);
-                    collect.add(lotteryEvent);
+                    events.add(lotteryEvent);
                 }
-                return collect;
+                log.info("events --- {}", events);
+                return events;
             }
         }
         return null;

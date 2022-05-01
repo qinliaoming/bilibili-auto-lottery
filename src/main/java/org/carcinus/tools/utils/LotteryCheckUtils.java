@@ -14,7 +14,7 @@ public class LotteryCheckUtils {
 
     public static void check(GlobalContext context, LotteryEvent event) {
         try {
-            int dynamicId = event.getDynamicId();
+            long dynamicId = event.getDynamicId();
             int masterId = Integer.parseInt(context.getConf(KeyConstant.DEDE_USER_ID));
             LotteryResult lotteryResult = AutoLotteryApi.getLotteryResult(String.valueOf(dynamicId));
             if (lotteryResult != null) {
@@ -34,7 +34,7 @@ public class LotteryCheckUtils {
         }
     }
 
-    private static String buildMessage(int dynamicId, String prize) {
+    private static String buildMessage(long dynamicId, String prize) {
         StringBuffer sb = new StringBuffer();
         sb.append("恭喜你中奖了\n");
         sb.append("奖品为：").append(prize);

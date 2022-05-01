@@ -24,18 +24,18 @@ public class MemoryLotteryEventSubscriber implements LotteryEventSubscriber {
 
     @Override
     public void callback(List<LotteryEvent> events) {
-        long currentTimeMillis = System.currentTimeMillis();
+        long currentTimeMillis = System.currentTimeMillis() / 1000;
         if (events != null) {
             events.stream()
                     .filter(event -> {
                         boolean isOpen = event.isOpen(currentTimeMillis);
                         boolean isContains = eventPriorityQueue.contains(event);
-                        return isOpen && isContains;
+                        return !isOpen && !isContains;
                     })
                     .forEach(event -> {
-                        boolean isParticipate = participate(event);
+                        boolean isParticipate = participate(event);;
                         if (isParticipate) {
-                            log.info("join dynamic:{}", event.getDynamicId());
+                            log.info("join lottery event:{}", event.getDynamicId());
                             eventPriorityQueue.offer(event);
                         }
                     });

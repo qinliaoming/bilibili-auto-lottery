@@ -1,6 +1,7 @@
 package org.carcinus.tools.bean.lottery;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Objects;
 
@@ -8,10 +9,11 @@ import java.util.Objects;
  * 抽奖活动的基本单元
  */
 @Data
+@ToString
 public class LotteryEvent implements Comparable<LotteryEvent> {
     private int lotteryId;
     private int uid;
-    private int dynamicId;
+    private long dynamicId;
     private long lotteryTime;
 
     private String firstPrize;
@@ -19,7 +21,7 @@ public class LotteryEvent implements Comparable<LotteryEvent> {
     private String thirdPrize;
 
     public boolean isOpen() {
-        return isOpen(System.currentTimeMillis());
+        return isOpen(System.currentTimeMillis()/ 1000);
     }
 
     public boolean isOpen(long currentTimeMillis) {
@@ -28,7 +30,7 @@ public class LotteryEvent implements Comparable<LotteryEvent> {
 
     @Override
     public int compareTo(LotteryEvent event) {
-        return (int) (event.lotteryTime - this.lotteryTime);
+        return (int) (this.lotteryTime - event.lotteryTime);
     }
 
     @Override

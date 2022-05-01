@@ -28,6 +28,7 @@ public class LotteryApi {
         LotteryEvent event = new LotteryEvent();
         event.setLotteryId(data.getLotteryId());
         event.setUid(data.getUid());
+        event.setLotteryTime(data.getLotteryTime());
         event.setDynamicId(data.getBusinessId());
         event.setFirstPrize(data.getFirstPrizeCmt());
         event.setSecondPrize(data.getSecondPrizeCmt());

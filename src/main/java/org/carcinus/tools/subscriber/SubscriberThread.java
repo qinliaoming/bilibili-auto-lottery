@@ -1,11 +1,13 @@
 package org.carcinus.tools.subscriber;
 
+import lombok.extern.slf4j.Slf4j;
 import org.carcinus.tools.bean.lottery.LotteryEvent;
 import org.carcinus.tools.context.GlobalContext;
 import org.carcinus.tools.utils.LotteryCheckUtils;
 
 import java.util.PriorityQueue;
 
+@Slf4j
 public class SubscriberThread extends Thread {
 
     private final PriorityQueue<LotteryEvent> events;
@@ -22,15 +24,21 @@ public class SubscriberThread extends Thread {
             while (context.getReadyStatus()) {
                 LotteryEvent event = events.poll();
                 if (event == null) {
-                    Thread.sleep(43200000);
+                    log.info("events is empty, sleep 1h");
+                    Thread.sleep(1000 * 60 * 60);
                 } else if (!event.isOpen()) {
                     events.offer(event);
-                    Thread.sleep(43200000);
+                    long lotteryTime = event.getLotteryTime();
+                    long currentTimeMillis = System.currentTimeMillis();
+                    long sleepTime = lotteryTime - (currentTimeMillis / 1000);
+                    log.info("first event no open, sleep {}s", sleepTime);
+                    Thread.sleep(sleepTime);
                 } else {
                     LotteryCheckUtils.check(context, event);
                 }
             }
         } catch (Exception e) {
+            context.setReadyStatus(false);
             e.printStackTrace();
         }
     }
