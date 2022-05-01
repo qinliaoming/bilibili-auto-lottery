@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.carcinus.tools.api.AutoLotteryApi;
 import org.carcinus.tools.context.GlobalContext;
 
-import java.util.List;
-
 @Slf4j
 public class AutoLottery {
 
@@ -18,7 +16,7 @@ public class AutoLottery {
         try {
             while (true) {
                 //判断是否就绪
-                boolean readyStatus = globalContext.isReadyStatus();
+                boolean readyStatus = globalContext.getReadyStatus();
                 log.info("readyStatus --- {}", readyStatus);
                 if (readyStatus) {
                     autoLotteryApplication.start();
@@ -34,15 +32,20 @@ public class AutoLottery {
     }
 
     private static void bootstrap(GlobalContext context) {
-        boolean isLoginSuccess = AutoLotteryApi.login(context);
-        if (isLoginSuccess) {
-            int lotteryTagId = AutoLotteryApi.getLotteryTagId(context);
-            if (lotteryTagId != -1) {
-                context.setConf("carcinus.auto.lottery.tag.id", String.valueOf(lotteryTagId));
-                context.setReadyStatus(true);
-                return;
+        boolean isLoginSuccess = false;
+        try {
+            isLoginSuccess = AutoLotteryApi.login(context);
+            if (isLoginSuccess) {
+                int lotteryTagId = AutoLotteryApi.getLotteryTagId(context);
+                if (lotteryTagId != -1) {
+                    context.setConf("carcinus.auto.lottery.tag.id", String.valueOf(lotteryTagId));
+                    context.setReadyStatus(true);
+                    return;
+                }
             }
+        } catch (Exception e) {
+            context.setReadyStatus(false);
+            e.printStackTrace();
         }
-        context.setReadyStatus(false);
     }
 }

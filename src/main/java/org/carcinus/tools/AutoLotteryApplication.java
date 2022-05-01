@@ -18,8 +18,9 @@ import java.util.PriorityQueue;
 public class AutoLotteryApplication implements AutoCloseable{
     private final PublisherThread publisherThread;
     private final SubscriberThread subscriberThread;
-
+    private final GlobalContext context;
     public AutoLotteryApplication(GlobalContext context) {
+        this.context = context;
         PriorityQueue<LotteryEvent> events = new PriorityQueue<>();
         LotteryEventSubscriber memoryLotteryEventSubscriber = new MemoryLotteryEventSubscriber(context, events);
         subscriberThread = new SubscriberThread(context, events);
@@ -31,16 +32,17 @@ public class AutoLotteryApplication implements AutoCloseable{
                 .map(ArticleLotteryEventPublisher::new)
                 .peek(publisher -> publisher.addSubscriber(memoryLotteryEventSubscriber))
                 .forEach(publishers::add);
-        publisherThread = new PublisherThread(publishers);
+        publisherThread = new PublisherThread(context, publishers);
     }
 
-    public void start() throws InterruptedException {
-        if (publisherThread.isAlive()) {
+    public void start()  {
+        if (!publisherThread.isAlive()) {
             publisherThread.start();
         }
-        if (subscriberThread.isAlive()){
+        if (!subscriberThread.isAlive()){
             subscriberThread.start();
         }
+        while (context.getReadyStatus())Thread.yield();
     }
 
     @Override

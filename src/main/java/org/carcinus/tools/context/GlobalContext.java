@@ -12,7 +12,7 @@ public class GlobalContext {
     private GlobalContext() {
     }
 
-    public boolean isReadyStatus() {
+    public boolean getReadyStatus() {
         return readyState;
     }
 

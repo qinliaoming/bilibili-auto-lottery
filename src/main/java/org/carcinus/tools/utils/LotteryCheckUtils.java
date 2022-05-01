@@ -7,6 +7,7 @@ import org.carcinus.tools.bean.response.lottery.LotteryResult;
 import org.carcinus.tools.bean.response.lottery.LotteryResultPerson;
 import org.carcinus.tools.context.GlobalContext;
 
+import java.io.IOException;
 import java.util.List;
 
 public class LotteryCheckUtils {
@@ -14,18 +15,23 @@ public class LotteryCheckUtils {
     public static void check(GlobalContext context, LotteryEvent event) {
         int dynamicId = event.getDynamicId();
         int masterId = Integer.parseInt(context.getConf(KeyConstant.DEDE_USER_ID));
-        LotteryResult lotteryResult = AutoLotteryApi.getLotteryResult(String.valueOf(dynamicId));
-
-        if (lotteryResult != null) {
-            if (checkLotteryResult(masterId, lotteryResult.getFirstPrizeResults())) {
-                EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getFirstPrize()));
+        LotteryResult lotteryResult = null;
+        try {
+            lotteryResult = AutoLotteryApi.getLotteryResult(String.valueOf(dynamicId));
+            if (lotteryResult != null) {
+                if (checkLotteryResult(masterId, lotteryResult.getFirstPrizeResults())) {
+                    EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getFirstPrize()));
+                }
+                if (checkLotteryResult(masterId, lotteryResult.getSecondPrizeResults())) {
+                    EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getSecondPrize()));
+                }
+                if (checkLotteryResult(masterId, lotteryResult.getThirdPrizeResults())) {
+                    EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getThirdPrize()));
+                }
             }
-            if (checkLotteryResult(masterId, lotteryResult.getSecondPrizeResults())) {
-                EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getSecondPrize()));
-            }
-            if (checkLotteryResult(masterId, lotteryResult.getThirdPrizeResults())) {
-                EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getThirdPrize()));
-            }
+        } catch (IOException e) {
+            context.setReadyStatus(false);
+            e.printStackTrace();
         }
     }
 

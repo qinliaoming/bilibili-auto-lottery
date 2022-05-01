@@ -13,16 +13,11 @@ import java.util.List;
 
 public class AutoLotteryApi {
 
-    public static boolean login(GlobalContext context) {
-        try {
-            return LoginApi.login(context);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+    public static boolean login(GlobalContext context) throws Exception {
+        return LoginApi.login(context);
     }
 
-    public static int getLotteryTagId(GlobalContext context) {
+    public static int getLotteryTagId(GlobalContext context) throws Exception {
         int lotteryTagId = RelationApi.getLotteryTagId();
         if (lotteryTagId == -1) {
             lotteryTagId = RelationApi.createLotteryTag(context);
@@ -30,72 +25,40 @@ public class AutoLotteryApi {
         return lotteryTagId;
     }
 
-    public static List<ArticleMeta> getArticleMetaByUid(int uid) {
-        try {
-            return ArticleApi.getArticleMetaByUid(uid);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Collections.emptyList();
+    public static List<ArticleMeta> getArticleMetaByUid(int uid) throws IOException {
+        return ArticleApi.getArticleMetaByUid(uid);
     }
 
 
-    public static List<String> getDynamicIdInArticle(int articleId) {
-        try {
-            return ArticleApi.getDynamicIdInArticle(articleId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Collections.emptyList();
+    public static List<String> getDynamicIdInArticle(int articleId) throws IOException {
+        return ArticleApi.getDynamicIdInArticle(articleId);
     }
 
-    public static List<DynamicCard> getSpaceHistory(int uid) {
-        try {
-            return DynamicApi.getSpaceHistory(uid);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Collections.emptyList();
+    public static List<DynamicCard> getSpaceHistory(int uid) throws IOException {
+        return DynamicApi.getSpaceHistory(uid);
     }
 
-    public static DynamicCard getDynamicDetail(String dynamicId) {
-        try {
-            return DynamicApi.getDynamicDetail(dynamicId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static DynamicCard getDynamicDetail(String dynamicId) throws IOException {
+        return DynamicApi.getDynamicDetail(dynamicId);
     }
 
-    public static DynamicCard getDynamicDetail(int dynamicId) {
-        try {
-            return DynamicApi.getDynamicDetail(dynamicId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static DynamicCard getDynamicDetail(int dynamicId) throws IOException {
+        return DynamicApi.getDynamicDetail(dynamicId);
     }
 
-    public static LotteryEvent getLotteryEvent(String dynamicId) {
-        try {
-            return LotteryApi.getLotteryEvent(dynamicId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static LotteryEvent getLotteryEvent(String dynamicId) throws IOException {
+        return LotteryApi.getLotteryEvent(dynamicId);
     }
-    public static LotteryResult getLotteryResult(String dynamicId) {
-        try {
-            return LotteryApi.getLotteryResult(dynamicId);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+
+    public static LotteryResult getLotteryResult(String dynamicId) throws IOException {
+        return LotteryApi.getLotteryResult(dynamicId);
     }
+
     public static boolean repostDynamic(GlobalContext context, String dynamicId, String content) {
         try {
             DynamicApi.repostDynamic(context, dynamicId, content);
         } catch (Exception e) {
+            context.setReadyStatus(false);
             e.printStackTrace();
         }
         return false;
@@ -105,14 +68,17 @@ public class AutoLotteryApi {
         try {
             ReplyApi.addReply(context, dynamic, message);
         } catch (Exception e) {
+            context.setReadyStatus(false);
             e.printStackTrace();
         }
         return false;
     }
-    public static boolean modifyRelation(GlobalContext context, String uid, RelationModifyActionType actionType){
+
+    public static boolean modifyRelation(GlobalContext context, String uid, RelationModifyActionType actionType) {
         try {
             RelationApi.modifyRelation(context, uid, actionType);
         } catch (Exception e) {
+            context.setReadyStatus(false);
             e.printStackTrace();
         }
         return false;

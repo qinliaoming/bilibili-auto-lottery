@@ -23,16 +23,18 @@ public class MemoryLotteryEventSubscriber implements LotteryEventSubscriber {
     @Override
     public void callback(List<LotteryEvent> events) {
         long currentTimeMillis = System.currentTimeMillis();
-        events.stream()
-                .filter(event -> {
-                    boolean isOpen = event.isOpen(currentTimeMillis);
-                    boolean isContains = eventPriorityQueue.contains(event);
-                    return isOpen && isContains;
-                })
-                .forEach(event -> {
-                    boolean isParticipate = participate(event);
-                    if (isParticipate) eventPriorityQueue.offer(event);
-                });
+        if (events != null) {
+            events.stream()
+                    .filter(event -> {
+                        boolean isOpen = event.isOpen(currentTimeMillis);
+                        boolean isContains = eventPriorityQueue.contains(event);
+                        return isOpen && isContains;
+                    })
+                    .forEach(event -> {
+                        boolean isParticipate = participate(event);
+                        if (isParticipate) eventPriorityQueue.offer(event);
+                    });
+        }
     }
 
     /**
@@ -41,8 +43,8 @@ public class MemoryLotteryEventSubscriber implements LotteryEventSubscriber {
 
     private boolean participate(LotteryEvent event) {
         String dynamicId = String.valueOf(event.getDynamicId());
-        boolean isFlow = AutoLotteryApi.modifyRelation(context, dynamicId, RelationModifyActionType.FOLLOW);
         String content = context.getConf(KeyConstant.REPOST_DYNAMIC_CONTENT, "get it!");
+        boolean isFlow = AutoLotteryApi.modifyRelation(context, dynamicId, RelationModifyActionType.FOLLOW);
         boolean isRepostDynamic = AutoLotteryApi.repostDynamic(context, dynamicId, content);
         boolean isReply = AutoLotteryApi.addReply(context, dynamicId, content);
         return isFlow && isRepostDynamic && isReply;
