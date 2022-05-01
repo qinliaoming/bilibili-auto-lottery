@@ -33,7 +33,9 @@ public class ArticleApi {
                 .getElementsByClass("article-link")
                 .stream()
                 .map(element -> element.attr("href"))
-                .map(link -> link.substring(link.lastIndexOf("/"), link.lastIndexOf("\\?")))
+                .map(link -> {
+                    if (link.startsWith(""))
+                })
                 .collect(Collectors.toList());
     }
 
