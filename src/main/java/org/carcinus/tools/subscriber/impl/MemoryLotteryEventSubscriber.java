@@ -1,5 +1,6 @@
 package org.carcinus.tools.subscriber.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.carcinus.tools.api.AutoLotteryApi;
 import org.carcinus.tools.bean.constant.KeyConstant;
 import org.carcinus.tools.bean.lottery.LotteryEvent;
@@ -10,6 +11,7 @@ import org.carcinus.tools.subscriber.LotteryEventSubscriber;
 import java.util.List;
 import java.util.PriorityQueue;
 
+@Slf4j
 public class MemoryLotteryEventSubscriber implements LotteryEventSubscriber {
 
     private final PriorityQueue<LotteryEvent> eventPriorityQueue;
@@ -32,7 +34,10 @@ public class MemoryLotteryEventSubscriber implements LotteryEventSubscriber {
                     })
                     .forEach(event -> {
                         boolean isParticipate = participate(event);
-                        if (isParticipate) eventPriorityQueue.offer(event);
+                        if (isParticipate) {
+                            log.info("join dynamic:{}", event.getDynamicId());
+                            eventPriorityQueue.offer(event);
+                        }
                     });
         }
     }

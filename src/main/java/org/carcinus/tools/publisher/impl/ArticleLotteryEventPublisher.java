@@ -1,25 +1,25 @@
 package org.carcinus.tools.publisher.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.carcinus.tools.api.AutoLotteryApi;
 import org.carcinus.tools.bean.lottery.LotteryEvent;
 import org.carcinus.tools.bean.response.article.ArticleMeta;
-import org.carcinus.tools.context.GlobalContext;
 import org.carcinus.tools.publisher.LotteryEventPublisher;
 import org.carcinus.tools.subscriber.LotteryEventSubscriber;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
+@Slf4j
 public class ArticleLotteryEventPublisher implements LotteryEventPublisher {
 
     private int uid;
     private List<LotteryEventSubscriber> subscribers;
-
+    private final Set<Integer> cacheArticleMetaId;
     public ArticleLotteryEventPublisher(int uid) {
         this.uid = uid;
         this.subscribers = new ArrayList<>();
+        this.cacheArticleMetaId = new HashSet<>();
     }
 
     @Override
@@ -43,13 +43,22 @@ public class ArticleLotteryEventPublisher implements LotteryEventPublisher {
         if (articleMetas != null && !articleMetas.isEmpty()) {
             ArticleMeta articleMeta = articleMetas.get(0);
             int articleMetaId = articleMeta.getId();
-            List<String> dynamicIds = AutoLotteryApi.getDynamicIdInArticle(articleMetaId);
-            List<LotteryEvent> collect = new ArrayList<>();
-            for (String dynamicId : dynamicIds) {
-                LotteryEvent lotteryEvent = AutoLotteryApi.getLotteryEvent(dynamicId);
-                collect.add(lotteryEvent);
+            //提前退出
+            if (cacheArticleMetaId.contains(articleMetaId)) {
+                log.info("articleMetaId({}) already exists !", articleMetaId);
+                return null;
+            }else {
+                cacheArticleMetaId.add(articleMetaId);
+                List<String> dynamicIds = AutoLotteryApi.getDynamicIdInArticle(articleMetaId);
+                log.info("uid --- {}", uid);
+                log.info("articleMetaId --- {}", articleMetaId);
+                List<LotteryEvent> collect = new ArrayList<>();
+                for (String dynamicId : dynamicIds) {
+                    LotteryEvent lotteryEvent = AutoLotteryApi.getLotteryEvent(dynamicId);
+                    collect.add(lotteryEvent);
+                }
+                return collect;
             }
-            return collect;
         }
         return null;
     }

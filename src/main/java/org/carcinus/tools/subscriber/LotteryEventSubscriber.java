@@ -1,7 +1,6 @@
 package org.carcinus.tools.subscriber;
 
 import org.carcinus.tools.bean.lottery.LotteryEvent;
-import org.carcinus.tools.context.GlobalContext;
 
 import java.util.List;
 

@@ -13,11 +13,10 @@ import java.util.List;
 public class LotteryCheckUtils {
 
     public static void check(GlobalContext context, LotteryEvent event) {
-        int dynamicId = event.getDynamicId();
-        int masterId = Integer.parseInt(context.getConf(KeyConstant.DEDE_USER_ID));
-        LotteryResult lotteryResult = null;
         try {
-            lotteryResult = AutoLotteryApi.getLotteryResult(String.valueOf(dynamicId));
+            int dynamicId = event.getDynamicId();
+            int masterId = Integer.parseInt(context.getConf(KeyConstant.DEDE_USER_ID));
+            LotteryResult lotteryResult = AutoLotteryApi.getLotteryResult(String.valueOf(dynamicId));
             if (lotteryResult != null) {
                 if (checkLotteryResult(masterId, lotteryResult.getFirstPrizeResults())) {
                     EmailUtils.sendEmail(context, buildMessage(event.getDynamicId(), event.getFirstPrize()));
