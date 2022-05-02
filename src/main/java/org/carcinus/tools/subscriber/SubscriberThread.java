@@ -25,8 +25,8 @@ public class SubscriberThread extends Thread {
             while (context.getReadyStatus()) {
                 LotteryEvent event = events.poll();
                 if (event == null) {
-                    log.info("events is empty, sleep 1h");
-                    Thread.sleep(1000 * 60 * 60);
+                    log.info("events is empty, sleep 60s");
+                    Thread.sleep(1000 * 60);
                 } else if (!event.isOpen()) {
                     events.offer(event);
                     long lotteryTime = event.getLotteryTime();
