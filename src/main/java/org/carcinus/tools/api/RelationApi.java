@@ -52,12 +52,12 @@ public class RelationApi {
         return tagId;
     }
 
-    public static boolean modifyRelation(GlobalContext context, String uid, RelationModifyActionType actionType) throws Exception {
+    public static boolean modifyRelation(GlobalContext context, int uid, RelationModifyActionType actionType) throws Exception {
 
         String csrf = context.getConf(KeyConstant.BILIBILI_JCT);
 
         if (modifyRelationParams == null) modifyRelationParams = new HashMap<>();
-        modifyRelationParams.put("fid", uid);
+        modifyRelationParams.put("fid", String.valueOf(uid));
         modifyRelationParams.put("act", actionType.getValue());
         modifyRelationParams.put("csrf", csrf);
 

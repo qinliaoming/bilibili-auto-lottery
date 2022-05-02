@@ -48,8 +48,9 @@ public class MemoryLotteryEventSubscriber implements LotteryEventSubscriber {
 
     private boolean participate(LotteryEvent event) {
         String dynamicId = String.valueOf(event.getDynamicId());
+        int uid = event.getUid();
         String content = context.getConf(KeyConstant.REPOST_DYNAMIC_CONTENT, "get it!");
-        boolean isFlow = AutoLotteryApi.modifyRelation(context, dynamicId, RelationModifyActionType.FOLLOW);
+        boolean isFlow = AutoLotteryApi.modifyRelation(context, uid, RelationModifyActionType.FOLLOW);
         boolean isRepostDynamic = AutoLotteryApi.repostDynamic(context, dynamicId, content);
         boolean isReply = AutoLotteryApi.addReply(context, dynamicId, content);
         return isFlow && isRepostDynamic && isReply;

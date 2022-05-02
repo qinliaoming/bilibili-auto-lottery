@@ -56,7 +56,7 @@ public class AutoLotteryApi {
 
     public static boolean repostDynamic(GlobalContext context, String dynamicId, String content) {
         try {
-            DynamicApi.repostDynamic(context, dynamicId, content);
+            return DynamicApi.repostDynamic(context, dynamicId, content);
         } catch (Exception e) {
             context.setReadyStatus(false);
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class AutoLotteryApi {
 
     public static boolean addReply(GlobalContext context, String dynamic, String message) {
         try {
-            ReplyApi.addReply(context, dynamic, message);
+            return ReplyApi.addReply(context, dynamic, message);
         } catch (Exception e) {
             context.setReadyStatus(false);
             e.printStackTrace();
@@ -74,9 +74,9 @@ public class AutoLotteryApi {
         return false;
     }
 
-    public static boolean modifyRelation(GlobalContext context, String uid, RelationModifyActionType actionType) {
+    public static boolean modifyRelation(GlobalContext context, int uid, RelationModifyActionType actionType) {
         try {
-            RelationApi.modifyRelation(context, uid, actionType);
+            return RelationApi.modifyRelation(context, uid, actionType);
         } catch (Exception e) {
             context.setReadyStatus(false);
             e.printStackTrace();
