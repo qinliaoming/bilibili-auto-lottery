@@ -3,6 +3,7 @@ package org.carcinus.tools;
 import lombok.extern.slf4j.Slf4j;
 import org.carcinus.tools.api.AutoLotteryApi;
 import org.carcinus.tools.context.GlobalContext;
+import org.carcinus.tools.utils.EmailUtils;
 
 @Slf4j
 public class AutoLottery {
@@ -28,6 +29,7 @@ public class AutoLottery {
             }
         } catch (Exception e) {
             log.error("catch Exception: ", e);
+            EmailUtils.sendEmail(globalContext, e.getMessage());
         }
     }
 

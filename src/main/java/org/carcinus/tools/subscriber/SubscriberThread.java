@@ -3,6 +3,7 @@ package org.carcinus.tools.subscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.carcinus.tools.bean.lottery.LotteryEvent;
 import org.carcinus.tools.context.GlobalContext;
+import org.carcinus.tools.utils.EmailUtils;
 import org.carcinus.tools.utils.LotteryCheckUtils;
 
 import java.util.PriorityQueue;
@@ -39,6 +40,7 @@ public class SubscriberThread extends Thread {
             }
         } catch (Exception e) {
             context.setReadyStatus(false);
+            EmailUtils.sendEmail(context, e.getMessage());
             e.printStackTrace();
         }
     }

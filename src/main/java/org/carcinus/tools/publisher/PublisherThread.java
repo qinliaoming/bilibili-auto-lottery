@@ -1,6 +1,7 @@
 package org.carcinus.tools.publisher;
 
 import org.carcinus.tools.context.GlobalContext;
+import org.carcinus.tools.utils.EmailUtils;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class PublisherThread extends Thread{
             }
         }catch (Exception e) {
             context.setReadyStatus(false);
+            EmailUtils.sendEmail(context, e.getMessage());
             e.printStackTrace();
         }
     }
