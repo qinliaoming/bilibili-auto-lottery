@@ -1,26 +1,39 @@
 package org.carcinus.tools.context;
 
-import lombok.Data;
-import lombok.Setter;
 import org.carcinus.tools.conf.Configuration;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GlobalContext {
 
-    private void setConf(Configuration conf){
+    private Configuration conf;
+    private boolean readyState;
+    private GlobalContext() {
+    }
+
+    public boolean getReadyStatus() {
+        return readyState;
+    }
+
+    public void setReadyStatus(boolean readyState) {
+        this.readyState = readyState;
+    }
+
+    private synchronized void setConf(Configuration conf){
         this.conf = conf;
     }
-    public void setConf(String key, String value) {
+
+    public synchronized void setConf(String key, String value) {
         this.conf.setConf(key, value);
     }
 
-    private Configuration conf;
-
     public String getConf(String key) {
         return conf.getConf(key);
+    }
+    public String getConf(String key, String defaultValue) {
+        String value = this.conf.getConf(key);
+        return value == null ? defaultValue : value;
     }
 
 

@@ -23,11 +23,11 @@ public class Configuration implements Serializable, Cloneable {
     }
 
     public Configuration(boolean isLoadLocal) {
+        configuration = new ConcurrentHashMap<>();
         if (isLoadLocal) {
             ConfigurationLoader configurationLoader = ConfigurationFactory.getInstance();
-            configuration = configurationLoader.loadConfiguration();
-        } else {
-            configuration = new ConcurrentHashMap<>();
+            Map<String, String> localConfiguration = configurationLoader.loadConfiguration();
+            configuration.putAll(localConfiguration);
         }
     }
 
@@ -36,7 +36,7 @@ public class Configuration implements Serializable, Cloneable {
     }
 
     @Override
-    protected Configuration clone() throws CloneNotSupportedException {
+    protected Configuration clone() {
         return new Configuration(configuration);
     }
 

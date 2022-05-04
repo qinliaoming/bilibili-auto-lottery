@@ -1,29 +1,14 @@
 package org.carcinus.tools.bean.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Response {
-    /**
-     * status code
-     * 0: success
-     */
-    private int code;
-    /**
-     * unknown
-     */
-    private boolean status;
-    /**
-     * timestamp
-     */
-    private long ts;
+    protected int code;
+    protected String message;
+    protected long ttl;
+    protected boolean status;
 
-//    /**
-//     * message body
-//     */
-//    private Object data;
+    protected long ts;
+
 }
